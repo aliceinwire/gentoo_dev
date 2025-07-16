@@ -1,0 +1,6 @@
+[GkernelCI Try]
+try_master: 'example:8888'
+try_username: 'Developer'
+try_password: 'example'
+try_comment: '<comment>'
+try_who: '<user>'

@@ -1,0 +1,8 @@
+/gentoo_repository/
+/.venv/
+/repos/
+/commits/
+/linux-patches/
+/genpatches-notes/
+/dev_settings.toml
+/irc_bot/irc.libera.chat/

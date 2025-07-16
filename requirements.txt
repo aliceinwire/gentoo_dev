@@ -1,0 +1,8 @@
+jinja2
+gitpython
+requests
+lxml
+bs4
+toml
+alive-progress
+buildbot

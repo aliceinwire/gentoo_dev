@@ -1,0 +1,80 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = git+ssh://git@git.gentoo.org/proj/linux-patches.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "master"]
+	remote = origin
+	merge = refs/heads/master
+[branch "4.14"]
+	remote = origin
+	merge = refs/heads/4.14
+[branch "4.9"]
+	remote = origin
+	merge = refs/heads/4.9
+[branch "5.4"]
+	remote = origin
+	merge = refs/heads/5.4
+[branch "4.10"]
+	remote = origin
+	merge = refs/heads/4.10
+[branch "4.19"]
+	remote = origin
+	merge = refs/heads/4.19
+[branch "5.3"]
+	remote = origin
+	merge = refs/heads/5.3
+[branch "5.7"]
+	remote = origin
+	merge = refs/heads/5.7
+[branch "5.8"]
+	remote = origin
+	merge = refs/heads/5.8
+[branch "4.4"]
+	remote = origin
+	merge = refs/heads/4.4
+[branch "5.10"]
+	remote = origin
+	merge = refs/heads/5.10
+[branch "5.9"]
+	remote = origin
+	merge = refs/heads/5.9
+[branch "5.11"]
+	remote = origin
+	merge = refs/heads/5.11
+[branch "5.12"]
+	remote = origin
+	merge = refs/heads/5.12
+[branch "5.1"]
+	remote = origin
+	merge = refs/heads/5.1
+[branch "genpatches-misc"]
+	remote = origin
+	merge = refs/heads/genpatches-misc
+[branch "5.13"]
+	remote = origin
+	merge = refs/heads/5.13
+[branch "4.0"]
+	remote = origin
+	merge = refs/heads/4.0
+[branch "5.14"]
+	remote = origin
+	merge = refs/heads/5.14
+[branch "5.15"]
+	remote = origin
+	merge = refs/heads/5.15
+[branch "5.18"]
+	remote = origin
+	merge = refs/heads/5.18
+[branch "5.19"]
+	remote = origin
+	merge = refs/heads/5.19
+[branch "6.0"]
+	remote = origin
+	merge = refs/heads/6.0
+[branch "6.1"]
+	remote = origin
+	merge = refs/heads/6.1
