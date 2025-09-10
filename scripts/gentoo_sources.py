@@ -74,7 +74,7 @@ def create_new_gentoo_sources(version,branch):
     templatedir = os.path.dirname(TEMPLATES_DIR)
     templateLoader = jinja2.FileSystemLoader(searchpath=templatedir)
     templateEnv = jinja2.Environment(loader=templateLoader)
-    loong_kernels=["6.12","6.15"]
+    loong_kernels=["6.12","6.15","6.16"]
     if branch in loong_kernels:
         template = templateEnv.get_template("/gentoo-sources_loong.jinja2")
     elif branch == "6.6":
@@ -122,7 +122,7 @@ def get_branches():
 # inform channel that we are checking gentoo-sources
 #os.system('echo "checking gentoo-sources" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 #branches=get_branches()
-branches=['6.15','6.12','6.6','6.1','5.15','5.10']
+branches=['6.16','6.15','6.12','6.6','6.1','5.15','5.10']
 # update gentoo repo
 os.chdir(ROOT_DIR)
 os.system("git pull --rebase=merges origin master -S")
