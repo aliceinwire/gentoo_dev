@@ -84,7 +84,7 @@ def find_first_ni_patch(file_name):
             if "Patch: " in line:
                 patch_name = line.split(" ")[2]
                 patch_number = patch_name.split("_")[0]
-                if int(patch_number) >= 1500:
+                if int(patch_number) >= 1400:
                     return line
 
 first_ni_patch = find_first_ni_patch(LINUX_PATCHES_REPO_DIR+"/0000_README")
