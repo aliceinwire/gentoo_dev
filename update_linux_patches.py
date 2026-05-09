@@ -168,6 +168,7 @@ def get_branches():
     return(branches)
 
 def check_git_push(branch, web_branch):
+    pass
     # run the git push command
     process = subprocess.Popen(["git", "push", "origin", branch], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = process.communicate()
@@ -225,7 +226,7 @@ for branch in branches:
     web_branch = get_links(branch)
     print("web branch= "+web_branch)
     for i in os.listdir(LINUX_PATCHES_REPO_DIR):
-        if i.startswith("10") or i.startswith("11") or i.startswith("12") or i.startswith("13") or i.startswith("14"):
+        if i.startswith("10") or i.startswith("11") or i.startswith("12") or i.startswith("13"):
             kernel_version=i.split("-")[1].split(".patch")[0]
             if web_branch == kernel_version:
                 web_kernel=web_branch

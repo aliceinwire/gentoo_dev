@@ -88,7 +88,7 @@ def rename_vanilla_packages(new_version):
     # add new vanilla-sources
     shutil.copyfile(TEMPLATES_DIR+'vanilla-sources.jinja',new_vanilla_sources)
     new_short_version=new_version.split(".")[0]+"."+new_version.split(".")[1]
-    loong_kernels=["6.1","6.6","6.12","6.15","6.16"]
+    loong_kernels=["6.1","6.6","6.12","6.15","6.16","6.17"]
     if new_short_version in loong_kernels:
         shutil.copyfile(TEMPLATES_DIR+'vanilla-sources_loong.jinja',new_vanilla_sources)
     # remove previous one
@@ -131,6 +131,11 @@ def get_branches():
 #os.system('echo "checking vanilla-sources" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 os.chdir(ROOT_DIR)
 branches=get_branches()
+#branches=['6.17','6.16']
+# Remove EOL branch
+branches.remove('6.19')
+## Add branch
+## branches.append('6.19')
 # During the merging efforts the two Kconfig options were abandoned in the
 # v5.4.3-rt1 release and since then there is only PREEMPT_RT which enables
 # the full features set (as PREEMPT_RT_FULL did in earlier releases).

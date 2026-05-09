@@ -27,18 +27,24 @@ def get_latest_tag():
     last_tag=last_tag.split('-')[1]
     return last_tag
 
-def get_committed_tag(branch):
+def get_version_list(branch):
     # get in gentoo-sources
     os.chdir(ROOT_DIR)
     #os.system("ls *"+branch+"*")
     gentoo_sources_last=""
     dir_files=os.listdir(ROOT_DIR)
     dir_files = sorted(dir_files)
-    version_list=[]
-    for file in dir_files:
-        if branch in file:
-            if "-r" not in file:
-                version_list.append(int(file.split("-")[2].split(".ebuild")[0].split(".")[2]))
+    target="gentoo-sources-" + branch
+    print("target: " + target)
+    prefix = f"{target}."
+    version_list = [file.removeprefix(prefix) for file in dir_files if file.startswith(prefix)]
+    version_list = [file.removesuffix(".ebuild") for file in version_list]
+    return version_list
+
+
+def get_committed_tag(branch):
+    os.chdir(ROOT_DIR)
+    version_list = get_version_list(branch)
     gs_last_version=str(max(version_list))
     gentoo_sources_last="gentoo-sources-"+branch+"."+gs_last_version+".ebuild"
     print("gs_last:"+str(gentoo_sources_last))
@@ -52,13 +58,7 @@ def get_committed_tag(branch):
 
 def create_filename(branch):
     gentoo_sources_last=""
-    dir_files=os.listdir(ROOT_DIR)
-    dir_files = sorted(dir_files)
-    version_list=[]
-    for file in dir_files:
-        if branch in file:
-            if "-r" not in file:
-                version_list.append(int(file.split("-")[2].split(".ebuild")[0].split(".")[2]))
+    version_list = get_version_list(branch)
     gs_last_version=str(max(version_list))
     gentoo_sources_last="gentoo-sources-"+branch+"."+gs_last_version+".ebuild"
     gentoo_sources_version=gentoo_sources_last.split("-")[2].split(".")[2]
@@ -74,7 +74,7 @@ def create_new_gentoo_sources(version,branch):
     templatedir = os.path.dirname(TEMPLATES_DIR)
     templateLoader = jinja2.FileSystemLoader(searchpath=templatedir)
     templateEnv = jinja2.Environment(loader=templateLoader)
-    loong_kernels=["6.12","6.15","6.16"]
+    loong_kernels=["6.12","6.15","6.16","6.17"]
     if branch in loong_kernels:
         template = templateEnv.get_template("/gentoo-sources_loong.jinja2")
     elif branch == "6.6":
@@ -122,7 +122,7 @@ def get_branches():
 # inform channel that we are checking gentoo-sources
 #os.system('echo "checking gentoo-sources" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 #branches=get_branches()
-branches=['6.16','6.15','6.12','6.6','6.1','5.15','5.10']
+branches=["6.19","6.18",'6.12','6.6','6.1','5.15','5.10']
 # update gentoo repo
 os.chdir(ROOT_DIR)
 os.system("git pull --rebase=merges origin master -S")
