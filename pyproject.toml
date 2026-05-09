@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "gkernel-dev"
+version = "0.0.1"
+description = "Standalone CLI for Gentoo kernel source maintenance workflows"
+authors = ["alicef@gentoo.org"]
+readme = "README.md"
+packages = [{ include = "gkernel_dev_cli" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+click = "^8.1.7"
+
+[tool.poetry.scripts]
+gkernel-dev = "gkernel_dev_cli.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.8.0"]
+build-backend = "poetry.core.masonry.api"
