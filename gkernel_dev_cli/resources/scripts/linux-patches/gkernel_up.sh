@@ -3,7 +3,7 @@
 # This file is used as main for automating gentoo_sources
 
 SCRIPT_DIR=$(cd "$(dirname "$0")"|| exit;pwd)
-ROOT_DIR=$(cd "$SCRIPT_DIR/../../"|| exit;pwd)
+ROOT_DIR=$(cd "$SCRIPT_DIR/../../../../"|| exit;pwd)
 LINUX_PATCHES_DIR=$(cd "$ROOT_DIR/linux-patches/"||exit;pwd)
 
 

@@ -7,7 +7,8 @@ from pathlib import Path
 import click
 
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
+PACKAGE_DIR = Path(__file__).resolve().parent
+WORKFLOWS_DIR = PACKAGE_DIR / "workflows"
 
 
 SCRIPT_MAP = {
@@ -21,11 +22,11 @@ SCRIPT_MAP = {
 
 
 def run_script(script_name: str) -> int:
-    script_path = ROOT_DIR / script_name
+    script_path = WORKFLOWS_DIR / script_name
     if not script_path.exists():
         raise click.ClickException(f"Script not found: {script_path}")
 
-    result = subprocess.run([sys.executable, str(script_path)], cwd=ROOT_DIR)
+    result = subprocess.run([sys.executable, str(script_path)], cwd=WORKFLOWS_DIR)
     return result.returncode
 
 

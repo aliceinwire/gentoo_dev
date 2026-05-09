@@ -6,12 +6,16 @@ from git.repo.base import Repo
 import os
 import shutil
 import subprocess
-CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
-GIT_DIR=os.path.dirname(os.path.realpath(__file__))+"/git/"
-SCRIPTS_DIR=os.path.dirname(os.path.realpath(__file__))+"/scripts/"
-GENTOO_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/gentoo_repository/"
-LINUX_PATCHES_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/linux-patches/"
-IRC_DIR=os.path.dirname(os.path.realpath(__file__))+"/irc_bot/"
+from pathlib import Path
+CURRENT_DIR = Path(__file__).resolve().parent
+PACKAGE_DIR = CURRENT_DIR.parent
+RESOURCES_DIR = PACKAGE_DIR / "resources"
+GIT_DIR = str(RESOURCES_DIR / "git")
+SCRIPTS_DIR = str(RESOURCES_DIR / "scripts")
+GENTOO_REPO_DIR = str(PACKAGE_DIR / "gentoo_repository")
+LINUX_PATCHES_REPO_DIR = str(PACKAGE_DIR / "linux-patches")
+IRC_DIR = str(RESOURCES_DIR / "irc_bot")
+
 
 def check_git_push():
     # run the git push command with the --dry-run option

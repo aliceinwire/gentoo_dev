@@ -5,6 +5,10 @@ description = "Standalone CLI for Gentoo kernel source maintenance workflows"
 authors = ["alicef@gentoo.org"]
 readme = "README.md"
 packages = [{ include = "gkernel_dev_cli" }]
+include = [
+  { path = "gkernel_dev_cli/resources/**", format = ["sdist", "wheel"] },
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.10"
