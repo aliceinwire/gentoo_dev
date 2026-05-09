@@ -6,11 +6,16 @@ from git.repo.base import Repo
 import os
 import shutil
 import subprocess
-CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
-GIT_DIR=os.path.dirname(os.path.realpath(__file__))+"/git/"
-SCRIPTS_DIR=os.path.dirname(os.path.realpath(__file__))+"/scripts/"
-GENTOO_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/gentoo_repository/"
-LINUX_PATCHES_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/linux-patches/"
+from pathlib import Path
+
+CURRENT_DIR = Path(__file__).resolve().parent
+PACKAGE_DIR = CURRENT_DIR.parent
+RESOURCES_DIR = PACKAGE_DIR / "resources"
+GIT_DIR = str(RESOURCES_DIR / "git")
+SCRIPTS_DIR = str(RESOURCES_DIR / "scripts")
+GENTOO_REPO_DIR = str(PACKAGE_DIR / "gentoo_repository")
+LINUX_PATCHES_REPO_DIR = str(PACKAGE_DIR / "linux-patches")
+
 
 
 import git
@@ -87,7 +92,7 @@ save("git+ssh://git@git.gentoo.org/repo/gentoo.git", GENTOO_REPO_DIR)
 # copy git configurations to gentoo repository
 shutil.copyfile(GIT_DIR+'/gentoo_repository_config',GENTOO_REPO_DIR+"/.git/config")
 # start packages updating scripts
-os.system("python /opt/gentoo_dev/update_linux_patches.py")
+os.system(f"python {CURRENT_DIR / 'update_linux_patches.py'}")
 os.system("python "+SCRIPTS_DIR+"rt_scraper.py")
 os.system("python "+SCRIPTS_DIR+"vanilla_scraper.py")
 os.system("python "+SCRIPTS_DIR+"git_scraper.py")

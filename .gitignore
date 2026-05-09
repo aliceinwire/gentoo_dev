@@ -18,6 +18,7 @@ venv/
 .pytest_cache/
 *.cover
 *.py[cod]
+*.lock
 .ipynb_checkpoints
 .nosetests.xml
 .poetry/

@@ -9,16 +9,24 @@ import sys
 import shutil
 import requests
 import subprocess
+from pathlib import Path
 from bs4 import BeautifulSoup
-CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
-GIT_DIR=os.path.dirname(os.path.realpath(__file__))+"/git/"
-SCRIPTS_DIR=os.path.dirname(os.path.realpath(__file__))+"/scripts/"
-IRC_DIR=os.path.dirname(os.path.realpath(__file__))+"/irc_bot/"
-GENTOO_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/gentoo_repository/"
-LINUX_PATCHES_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/linux-patches/"
-GENPATCHES_MISC_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/repos/genpatches-misc/"
-COMMITS_DIR=CURRENT_DIR+"/commits/"
+CURRENT_DIR = Path(__file__).resolve().parent
+PACKAGE_DIR = CURRENT_DIR.parent
+REPOROOT_DIR = CURRENT_DIR.parent.parent
+RESOURCES_DIR = PACKAGE_DIR / "resources"
+GIT_DIR = str(RESOURCES_DIR / "git")
+SCRIPTS_DIR = str(RESOURCES_DIR / "scripts")
+IRC_DIR = str(RESOURCES_DIR / "irc_bot")
+GENTOO_REPO_DIR = str(REPOROOT_DIR / "gentoo_repository")
+LINUX_PATCHES_REPO_DIR = str(REPOROOT_DIR / "linux-patches")
+print(LINUX_PATCHES_REPO_DIR )
+GENPATCHES_MISC_REPO_DIR = str(REPOROOT_DIR / "repos/genpatches-misc")
+COMMITS_DIR = str(REPOROOT_DIR / "commits") + "/"
 
+def resolve_dev_settings_path():
+    xdg_config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
+    return xdg_config_home / "gkernel-dev" / "dev_settings.toml"
 
 import git
 from alive_progress import alive_bar
@@ -187,7 +195,8 @@ def check_git_push(branch, web_branch):
 #        return False
 
 # load settings file
-with open("./dev_settings.toml") as f:
+dev_settings_path = resolve_dev_settings_path()
+with open(dev_settings_path) as f:
     dev_settings = toml.load(f)
 
 # {'gkernelci_try': {'try_master': '<url>:5555',
@@ -208,7 +217,7 @@ os.system('echo "checking linux-patches" >   ' + IRC_DIR + '/irc.libera.chat/\#a
 # shutil.copyfile(GIT_DIR+'/gentoo_repository_config',GENTOO_REPO_DIR+"/.git/config")
 os.chdir(LINUX_PATCHES_REPO_DIR)
 # update GkernelCI scripts
-shutil.copytree(SCRIPTS_DIR+'linux-patches/buildbot/', LINUX_PATCHES_REPO_DIR+'/.buildbot/', dirs_exist_ok=True)
+shutil.copytree(SCRIPTS_DIR+'/linux-patches/buildbot/', LINUX_PATCHES_REPO_DIR+'/.buildbot/', dirs_exist_ok=True)
 # get kernel branches from website
 branches=get_branches()
 print(branches)
@@ -233,7 +242,7 @@ for branch in branches:
     if web_kernel == 0:
         print("not found on linux-patches kernel.org version: " + web_branch)
         # start packages updating scripts
-        os.system(SCRIPTS_DIR+"linux-patches/gkernel_up.sh")
+        os.system(SCRIPTS_DIR+"/linux-patches/gkernel_up.sh")
         # test changes on gkernelci
         os.system("python .buildbot/format.py"\
                   + " " + gkernelci_try["try_master"]\

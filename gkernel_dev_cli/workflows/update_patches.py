@@ -19,6 +19,11 @@ GENPATCHES_MISC_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/repos/gen
 COMMITS_DIR=CURRENT_DIR+"/commits/"
 
 
+def resolve_dev_settings_path():
+    xdg_config_home = os.environ.get("XDG_CONFIG_HOME", os.path.join(os.path.expanduser("~"), ".config"))
+    return os.path.join(xdg_config_home, "gkernel-dev", "dev_settings.toml")
+
+
 import git
 from alive_progress import alive_bar
 
@@ -167,7 +172,7 @@ def get_branches():
     return(branches)
 
 # load settings file
-with open("./dev_settings.toml") as f:
+with open(resolve_dev_settings_path()) as f:
     dev_settings = toml.load(f)
 
 # {'gkernelci_try': {'try_master': '<url>:5555',
