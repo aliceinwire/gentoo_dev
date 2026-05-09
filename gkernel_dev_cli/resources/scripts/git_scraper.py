@@ -11,7 +11,6 @@ import sys
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
-IRC_DIR=os.path.dirname(os.path.realpath(__file__))+"/../irc_bot/"
 ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/git-sources/"
 print("change dir to git-sources")
 os.chdir(ROOT_DIR)
@@ -117,10 +116,6 @@ def rename_git_packages(new_version,branch):
         print("not exist new git sources")
         create_new_version(new_git_sources, job_list)
 
-        # inform channel that we are committing git-sources
-        os.system('echo "commit git-sources version: ' + new_git_sources + '" >   '\
-                  + IRC_DIR + '/irc.libera.chat/\#astat/in')
-
     #check if we remove previous version
     #if os.path.exists(previous_git_sources):
     #    print("exist previous")
@@ -179,9 +174,6 @@ def get_mainline():
         print(f"Error occurred: {str(e)}")
 
 
-
-# inform channel that we are checking git-sources
-os.system('echo "checking git-sources" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 
 branches=[get_mainline()]
 # update gentoo repo

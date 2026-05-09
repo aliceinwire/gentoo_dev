@@ -7,7 +7,6 @@ import re
 import shutil
 import os
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
-IRC_DIR=os.path.dirname(os.path.realpath(__file__))+"/../irc_bot/"
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
 ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/rt-sources/"
 print("change dir to rt-sources")
@@ -70,11 +69,6 @@ def rename_rt_packages(new_version,branch):
             shutil.copyfile(TEMPLATES_DIR+'/rt-sources_until_5.4.yaml',ROOT_DIR+new_rt_sources)
         else:
             shutil.copyfile(TEMPLATES_DIR+'/rt-sources.yaml',ROOT_DIR+new_rt_sources)
-
-
-
-# inform channel that we are checking rt-sources
-os.system('echo "checking rt-sources" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 
 branches=['4.14','4.19','5.4','5.10','5.15','6.0','6.1','6.5','6.6','6.12']
 # During the merging efforts the two Kconfig options were abandoned in the

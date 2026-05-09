@@ -17,7 +17,6 @@ REPOROOT_DIR = CURRENT_DIR.parent.parent
 RESOURCES_DIR = PACKAGE_DIR / "resources"
 GIT_DIR = str(RESOURCES_DIR / "git")
 SCRIPTS_DIR = str(RESOURCES_DIR / "scripts")
-IRC_DIR = str(RESOURCES_DIR / "irc_bot")
 GENTOO_REPO_DIR = str(REPOROOT_DIR / "gentoo_repository")
 LINUX_PATCHES_REPO_DIR = str(REPOROOT_DIR / "linux-patches")
 print(LINUX_PATCHES_REPO_DIR )
@@ -181,19 +180,6 @@ def check_git_push(branch, web_branch):
     process = subprocess.Popen(["git", "push", "origin", branch], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     output, error = process.communicate()
 
-#    # check if the command was successful
-#    if process.returncode == 0:
-#        print("Git push was successful!")
-#        #os.system('python ' + IRC_DIR + '/bot.py "commit linux-patches for ' + web_branch +' "')
-#        os.system('echo "Success commit linux-patches for ' + web_branch +' " >   ' + IRC_DIR + '/irc.libera.chat/\#gentoo-kernelci/in')
-#        return True
-#    else:
-#        print("Error occurred during git push:")
-#        print(error.decode("utf-8").strip())
-#        #os.system('python ' + IRC_DIR + '/bot.py "commit linux-patches for ' + web_branch +' "')
-#        os.system('echo "Failed commit linux-patches for ' + web_branch +' " >   ' + IRC_DIR + '/irc.libera.chat/\#gentoo-kernelci/in')
-#        return False
-
 # load settings file
 dev_settings_path = resolve_dev_settings_path()
 with open(dev_settings_path) as f:
@@ -211,8 +197,6 @@ save("git+ssh://git@git.gentoo.org/proj/linux-patches.git", \
 save("git+ssh://git@git.gentoo.org/proj/linux-patches.git", \
      GENPATCHES_MISC_REPO_DIR, git_branch="genpatches-misc")
 
-# inform channel that we are checking linux-patches
-os.system('echo "checking linux-patches" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 # copy git configurations to gentoo repository
 # shutil.copyfile(GIT_DIR+'/gentoo_repository_config',GENTOO_REPO_DIR+"/.git/config")
 os.chdir(LINUX_PATCHES_REPO_DIR)
