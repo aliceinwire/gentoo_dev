@@ -1,6 +1,21 @@
 # Gentoo Kernel sources development environment
 
-Need to have write access to `/var/cache/distfiles`
+Requirements:
+- Gentoo developer SSH access
+- pkgdev installed
+- git configured
+- write access to `/var/cache/distfiles`
+- XDG config file at `~/.config/gkernel-dev/dev_settings.toml`
+
+Example `dev_settings.toml`:
+```
+[gkernelci_try]
+try_master = "..."
+try_username = "..."
+try_password = "..."
+try_comment = "testing"
+try_who = "arisut"
+```
 
 ## Standalone CLI (Poetry + Click)
 
