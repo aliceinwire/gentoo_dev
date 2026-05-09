@@ -6,3 +6,4 @@ bs4
 toml
 alive-progress
 buildbot
+ruff
