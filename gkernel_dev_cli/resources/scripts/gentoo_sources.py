@@ -6,16 +6,16 @@ from bs4 import BeautifulSoup
 import re
 import os
 import sys
+from pathlib import Path
 import shutil
 import subprocess
 import jinja2
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
+REPO_ROOT = Path(__file__).resolve().parents[3]
 LINUX_PATCHES_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/../linux-patches/"
-IRC_DIR=os.path.dirname(os.path.realpath(__file__))+"/../irc_bot/"
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
-ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/gentoo-sources/"
-#print("change dir to gentoo-sources")
+ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "gentoo-sources") + "/"
 
 def get_latest_tag():
     # get in linux patches
@@ -119,8 +119,6 @@ def get_branches():
             branches.append(i.split(" ")[1].split(".")[0]+"."+i.split(" ")[1].split(".")[1])
     return(branches)
 
-# inform channel that we are checking gentoo-sources
-#os.system('echo "checking gentoo-sources" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 #branches=get_branches()
 branches=["6.19","6.18",'6.12','6.6','6.1','5.15','5.10']
 # update gentoo repo

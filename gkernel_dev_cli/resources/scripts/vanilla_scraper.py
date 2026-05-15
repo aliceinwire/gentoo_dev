@@ -5,12 +5,13 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import os
+from pathlib import Path
 import shutil
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
+REPO_ROOT = Path(__file__).resolve().parents[3]
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
-IRC_DIR=os.path.dirname(os.path.realpath(__file__))+"/../irc_bot/"
-ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/vanilla-sources/"
+ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "vanilla-sources") + "/"
 print("change dir to vanilla-sources")
 os.chdir(ROOT_DIR)
 
@@ -127,8 +128,6 @@ def get_branches():
             branches.append(i.split(" ")[1].split(".")[0]+"."+i.split(" ")[1].split(".")[1])
     return(branches)
 
-# inform channel that we are checking vanilla-sources
-#os.system('echo "checking vanilla-sources" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
 os.chdir(ROOT_DIR)
 branches=get_branches()
 #branches=['6.17','6.16']

@@ -3,7 +3,6 @@ import os
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
-IRC_DIR=os.path.dirname(os.path.realpath(__file__))+"/../irc_bot/"
 ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/vanilla-sources/"
 os.chdir(ROOT_DIR)
 

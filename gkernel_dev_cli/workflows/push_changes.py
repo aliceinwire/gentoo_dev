@@ -14,7 +14,6 @@ GIT_DIR = str(RESOURCES_DIR / "git")
 SCRIPTS_DIR = str(RESOURCES_DIR / "scripts")
 GENTOO_REPO_DIR = str(PACKAGE_DIR / "gentoo_repository")
 LINUX_PATCHES_REPO_DIR = str(PACKAGE_DIR / "linux-patches")
-IRC_DIR = str(RESOURCES_DIR / "irc_bot")
 
 
 def check_git_push():
@@ -24,15 +23,12 @@ def check_git_push():
 
     # check if there are any commits that need to be pushed
     if "Everything up-to-date" in error.decode("utf-8"):
-        os.system('echo "No changes to push" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "'+ output.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "'+ error.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
         print("Nothing to push!")
         return True
     else:
-        os.system('echo "The following commits need to be pushed:" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "'+ output.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "'+ error.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
+        print("The following commits need to be pushed:")
+        print(output.decode("utf-8").strip())
+        print(error.decode("utf-8").strip())
 
     # run the git push command
     process = subprocess.Popen(["pkgdev", "push", "--pull"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -41,16 +37,15 @@ def check_git_push():
     # check if the command was successful
     if process.returncode == 0:
         print("Git push was successful!")
-        os.system('echo "'+ output.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "'+ error.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "pushed changes" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
+        print(output.decode("utf-8").strip())
+        print(error.decode("utf-8").strip())
+        print("pushed changes")
         return True
     else:
         print("Error occurred during git push:")
         print(error.decode("utf-8").strip())
-        os.system('echo "'+ output.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "'+ error.decode("utf-8").strip() +'" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
-        os.system('echo "ERROR on pushing changes" >   ' + IRC_DIR + '/irc.libera.chat/\#astat/in')
+        print(output.decode("utf-8").strip())
+        print("ERROR on pushing changes")
         return False
 
 
