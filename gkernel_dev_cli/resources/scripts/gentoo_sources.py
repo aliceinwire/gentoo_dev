@@ -6,15 +6,16 @@ from bs4 import BeautifulSoup
 import re
 import os
 import sys
+from pathlib import Path
 import shutil
 import subprocess
 import jinja2
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
+REPO_ROOT = Path(__file__).resolve().parents[3]
 LINUX_PATCHES_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/../linux-patches/"
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
-ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/gentoo-sources/"
-#print("change dir to gentoo-sources")
+ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "gentoo-sources") + "/"
 
 def get_latest_tag():
     # get in linux patches

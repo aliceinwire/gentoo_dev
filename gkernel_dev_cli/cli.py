@@ -9,6 +9,7 @@ import click
 
 PACKAGE_DIR = Path(__file__).resolve().parent
 WORKFLOWS_DIR = PACKAGE_DIR / "workflows"
+RESOURCE_SCRIPTS_DIR = PACKAGE_DIR / "resources" / "scripts"
 
 
 SCRIPT_MAP = {
@@ -20,13 +21,18 @@ SCRIPT_MAP = {
     "check-linux-patch-patches": "check_linux_patch_patches.py",
 }
 
+RESOURCE_SCRIPT_MAP = {
+    "vanilla-scraper": "vanilla_scraper.py",
+    "gentoo-sources": "gentoo_sources.py",
+}
 
-def run_script(script_name: str) -> int:
-    script_path = WORKFLOWS_DIR / script_name
+
+def run_script(script_name: str, script_dir: Path = WORKFLOWS_DIR) -> int:
+    script_path = script_dir / script_name
     if not script_path.exists():
         raise click.ClickException(f"Script not found: {script_path}")
 
-    result = subprocess.run([sys.executable, str(script_path)], cwd=WORKFLOWS_DIR)
+    result = subprocess.run([sys.executable, str(script_path)], cwd=script_dir)
     return result.returncode
 
 
@@ -57,6 +63,30 @@ def _register_shortcut_commands() -> None:
 
 
 _register_shortcut_commands()
+
+
+@main.command("resource", help="Run one of the resource maintenance scripts.")
+@click.argument("script", type=click.Choice(sorted(RESOURCE_SCRIPT_MAP.keys()), case_sensitive=False))
+def run_resource_script(script: str) -> None:
+    script_name = RESOURCE_SCRIPT_MAP[script]
+    rc = run_script(script_name, script_dir=RESOURCE_SCRIPTS_DIR)
+    if rc != 0:
+        raise click.ClickException(f"Resource script '{script}' failed with exit code {rc}")
+
+
+def _register_resource_shortcut_commands() -> None:
+    for resource_name, script_name in RESOURCE_SCRIPT_MAP.items():
+
+        @main.command(resource_name, help=f"Shortcut for: gkernel-dev resource {resource_name}")
+        def _resource_command(name: str = resource_name, script: str = script_name) -> None:
+            rc = run_script(script, script_dir=RESOURCE_SCRIPTS_DIR)
+            if rc != 0:
+                raise click.ClickException(
+                    f"Resource script '{name}' failed with exit code {rc}"
+                )
+
+
+_register_resource_shortcut_commands()
 
 
 if __name__ == "__main__":

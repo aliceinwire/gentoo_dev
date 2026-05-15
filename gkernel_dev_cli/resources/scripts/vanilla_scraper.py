@@ -5,11 +5,13 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import os
+from pathlib import Path
 import shutil
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
+REPO_ROOT = Path(__file__).resolve().parents[3]
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
-ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/vanilla-sources/"
+ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "vanilla-sources") + "/"
 print("change dir to vanilla-sources")
 os.chdir(ROOT_DIR)
 

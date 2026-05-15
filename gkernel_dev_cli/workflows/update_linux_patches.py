@@ -204,6 +204,10 @@ os.chdir(LINUX_PATCHES_REPO_DIR)
 shutil.copytree(SCRIPTS_DIR+'/linux-patches/buildbot/', LINUX_PATCHES_REPO_DIR+'/.buildbot/', dirs_exist_ok=True)
 # get kernel branches from website
 branches=get_branches()
+# Remove EOL branch
+branches.remove('6.19')
+## Add branch
+## branches.append('6.19')
 print(branches)
 # During the merging efforts the two Kconfig options were abandoned in the
 # v5.4.3-rt1 release and since then there is only PREEMPT_RT which enables
