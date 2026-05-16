@@ -1,67 +1,20 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import requests
-from bs4 import BeautifulSoup
-import re
 import os
+import sys
 from pathlib import Path
 import shutil
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
 REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from gkernel_dev_cli.lib.kernel_org import get_branches, get_links
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
 ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "vanilla-sources") + "/"
 print("change dir to vanilla-sources")
 os.chdir(ROOT_DIR)
-
-# clean the html table and get the version number
-def get_version_number(tr_html):
-    # get list of td
-    tr_html = tr_html.findChildren('td')
-    # td 1 contains the kernel number
-    tr_html = tr_html[1]
-    # get the kernel number inside strong tag
-    for node in tr_html.findAll('strong'):
-        tr_html_number = ''.join(node.findAll(text=True))
-    return tr_html_number
-
-
-def find_new_version(version_number, argument_version):
-    version = version_number.split('.', 2)
-    # skip versions with no revisions
-    # 6.2 (mainline) and use instead into 6.2.2 [stable]
-    if int(len(version)) == 2:
-        return None
-    try:
-        version = [version[0],version[1].split('-')[0]]
-    except:
-        pass
-    try:
-        version = version[0] + '.' + version[1]
-        if version == argument_version:
-            return version_number
-        else:
-            pass
-    except:
-        pass
-
-def get_links(branch):
-    revision=0
-    return_version=""
-    versions=[]
-    root_url='https://kernel.org'
-    r = requests.get(root_url)
-    soup = BeautifulSoup(r.content, 'lxml')
-    tables = soup.findChildren('table')
-    my_table = tables[2]
-    tr_table = my_table.findChildren('tr')
-    for i in tr_table:
-        version_number = get_version_number(i)
-        new_version_revision = find_new_version(version_number, branch)
-        if new_version_revision is not None:
-            break
-    return(version_number)
 
 def get_previous_version(new_version):
     new_revision=new_version.split('.')[2]
@@ -97,36 +50,6 @@ def rename_vanilla_packages(new_version):
         os.remove(ROOT_DIR + previous_vanilla_sources)
     except:
         print("not found dir: "+ROOT_DIR+previous_vanilla_sources)
-
-# clean the html table and get the version number
-def get_kernel(tr_html):
-    # get list of td
-    tr_html = tr_html.findChildren('td')
-    # td 1 contains the kernel number
-    version_html = tr_html[1]
-    branch_html = tr_html[0]
-    # get the kernel number inside strong tag
-    for node in version_html.findAll('strong'):
-        version_string = ''.join(node.findAll(text=True))
-    branch_string=''.join(branch_html.findAll(text=True))
-    return branch_string + " " + version_string
-
-def get_branches():
-    branches=[]
-    kernel_string=[]
-    root_url='https://kernel.org'
-    r = requests.get(root_url)
-    soup = BeautifulSoup(r.content, 'lxml')
-    tables = soup.findChildren('table')
-    my_table = tables[2]
-    tr_table = my_table.findChildren('tr')
-    for i in tr_table:
-        kernel_string.append(get_kernel(i))
-    for i in kernel_string:
-        kernel_release=i.split(" ")[0]
-        if kernel_release == "stable:" or kernel_release == "longterm:":
-            branches.append(i.split(" ")[1].split(".")[0]+"."+i.split(" ")[1].split(".")[1])
-    return(branches)
 
 os.chdir(ROOT_DIR)
 branches=get_branches()

@@ -13,7 +13,10 @@ import jinja2
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
 REPO_ROOT = Path(__file__).resolve().parents[3]
-LINUX_PATCHES_REPO_DIR=os.path.dirname(os.path.realpath(__file__))+"/../linux-patches/"
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from gkernel_dev_cli.lib.kernel_org import get_branches, get_links
+LINUX_PATCHES_REPO_DIR=str(REPO_ROOT / "linux-patches") + "/"
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
 ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "gentoo-sources") + "/"
 
@@ -89,38 +92,13 @@ def create_new_gentoo_sources(version,branch):
     job_list.append(jobt)
     return jobt
 
-# clean the html table and get the version number
-def get_kernel(tr_html):
-    # get list of td
-    tr_html = tr_html.findChildren('td')
-    # td 1 contains the kernel number
-    version_html = tr_html[1]
-    branch_html = tr_html[0]
-    # get the kernel number inside strong tag
-    for node in version_html.findAll('strong'):
-        version_string = ''.join(node.findAll(text=True))
-    branch_string=''.join(branch_html.findAll(text=True))
-    return branch_string + " " + version_string
-
-def get_branches():
-    branches=[]
-    kernel_string=[]
-    root_url='https://kernel.org'
-    r = requests.get(root_url)
-    soup = BeautifulSoup(r.content, 'lxml')
-    tables = soup.findChildren('table')
-    my_table = tables[2]
-    tr_table = my_table.findChildren('tr')
-    for i in tr_table:
-        kernel_string.append(get_kernel(i))
-    for i in kernel_string:
-        kernel_release=i.split(" ")[0]
-        if kernel_release == "stable:" or kernel_release == "longterm:":
-            branches.append(i.split(" ")[1].split(".")[0]+"."+i.split(" ")[1].split(".")[1])
-    return(branches)
-
-#branches=get_branches()
-branches=["6.19","6.18",'6.12','6.6','6.1','5.15','5.10']
+branches=get_branches()
+#branches=["6.19","6.18",'6.12','6.6','6.1','5.15','5.10']
+#branches=['6.17','6.16']
+# Remove EOL branch
+branches.remove('6.19')
+## Add branch
+## branches.append('6.19')
 # update gentoo repo
 os.chdir(ROOT_DIR)
 os.system("git pull --rebase=merges origin master -S")

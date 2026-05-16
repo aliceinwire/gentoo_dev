@@ -2,15 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import annotations
-from git.repo.base import Repo
 import os
 import toml
 import sys
 import shutil
-import requests
 import subprocess
 from pathlib import Path
-from bs4 import BeautifulSoup
+from gkernel_dev_cli.lib.git_helpers import save_repo
+from gkernel_dev_cli.lib.kernel_org import get_branches, get_links
 CURRENT_DIR = Path(__file__).resolve().parent
 PACKAGE_DIR = CURRENT_DIR.parent
 REPOROOT_DIR = CURRENT_DIR.parent.parent
@@ -26,153 +25,6 @@ COMMITS_DIR = str(REPOROOT_DIR / "commits") + "/"
 def resolve_dev_settings_path():
     xdg_config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config"))
     return xdg_config_home / "gkernel-dev" / "dev_settings.toml"
-
-import git
-from alive_progress import alive_bar
-
-
-class GitRemoteProgress(git.RemoteProgress):
-    OP_CODES = [
-        "BEGIN",
-        "CHECKING_OUT",
-        "COMPRESSING",
-        "COUNTING",
-        "END",
-        "FINDING_SOURCES",
-        "RECEIVING",
-        "RESOLVING",
-        "WRITING",
-    ]
-    OP_CODE_MAP = {
-        getattr(git.RemoteProgress, _op_code): _op_code for _op_code in OP_CODES
-    }
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.alive_bar_instance = None
-
-    @classmethod
-    def get_curr_op(cls, op_code: int) -> str:
-        """Get OP name from OP code."""
-        # Remove BEGIN- and END-flag and get op name
-        op_code_masked = op_code & cls.OP_MASK
-        return cls.OP_CODE_MAP.get(op_code_masked, "?").title()
-
-    def update(
-        self,
-        op_code: int,
-        cur_count: str | float,
-        max_count: str | float | None = None,
-        message: str | None = "",
-    ) -> None:
-        cur_count = float(cur_count)
-        max_count = float(max_count)
-
-        # Start new bar on each BEGIN-flag
-        if op_code & self.BEGIN:
-            self.curr_op = self.get_curr_op(op_code)
-            self._dispatch_bar(title=self.curr_op)
-
-        self.bar(cur_count / max_count)
-        self.bar.text(message)
-
-        # End progress monitoring on each END-flag
-        if op_code & git.RemoteProgress.END:
-            self._destroy_bar()
-
-    def _dispatch_bar(self, title: str | None = "") -> None:
-        """Create a new progress bar"""
-        self.alive_bar_instance = alive_bar(manual=True, title=title)
-        self.bar = self.alive_bar_instance.__enter__()
-
-    def _destroy_bar(self) -> None:
-        """Destroy an existing progress bar"""
-        self.alive_bar_instance.__exit__(None, None, None)
-
-def save (source, directory, git_branch="master"):
-    if not os.path.exists(directory):
-        Repo.clone_from(source, directory,  branch=git_branch, progress=GitRemoteProgress())
-    else:
-        repo = Repo(directory)
-        repo.remotes[0].pull()
-
-def get_links(branch):
-    revision=0
-    return_version=""
-    versions=[]
-    root_url='https://kernel.org'
-    r = requests.get(root_url)
-    soup = BeautifulSoup(r.content, 'lxml')
-    tables = soup.findChildren('table')
-    my_table = tables[2]
-    tr_table = my_table.findChildren('tr')
-    for i in tr_table:
-        version_number = get_version_number(i)
-        new_version_revision = find_new_version(version_number, branch)
-        if new_version_revision is not None:
-            break
-    return(version_number)
-
-# clean the html table and get the version number
-def get_version_number(tr_html):
-    # get list of td
-    tr_html = tr_html.findChildren('td')
-    # td 1 contains the kernel number
-    tr_html = tr_html[1]
-    # get the kernel number inside strong tag
-    for node in tr_html.findAll('strong'):
-        tr_html_number = ''.join(node.findAll(text=True))
-    return tr_html_number
-
-def find_new_version(version_number, argument_version):
-    version = version_number.split('.', 2)
-    # skip versions with no revisions
-    # 6.2 (mainline) and use instead into 6.2.2 [stable]
-    if int(len(version)) == 2:
-        return None
-    try:
-        version = [version[0],version[1].split('-')[0]]
-    except:
-        pass
-    try:
-        version = version[0] + '.' + version[1]
-        if version == argument_version:
-            return version_number
-        else:
-            pass
-    except:
-        pass
-
-# clean the html table and get the version number
-def get_kernel(tr_html):
-    # get list of td
-    tr_html = tr_html.findChildren('td')
-    # td 1 contains the kernel number
-    version_html = tr_html[1]
-    branch_html = tr_html[0]
-    # get the kernel number inside strong tag
-    for node in version_html.findAll('strong'):
-        version_string = ''.join(node.findAll(text=True))
-    branch_string=''.join(branch_html.findAll(text=True))
-    return branch_string + " " + version_string
-
-
-def get_branches():
-    branches=[]
-    kernel_string=[]
-    root_url='https://kernel.org'
-    r = requests.get(root_url)
-    soup = BeautifulSoup(r.content, 'lxml')
-    tables = soup.findChildren('table')
-    my_table = tables[2]
-    tr_table = my_table.findChildren('tr')
-    for i in tr_table:
-        kernel_string.append(get_kernel(i))
-    for i in kernel_string:
-        kernel_release=i.split(" ")[0]
-        if kernel_release == "stable:" or kernel_release == "longterm:":
-            branches.append(i.split(" ")[1].split(".")[0]+"."+i.split(" ")[1].split(".")[1])
-    return(branches)
 
 def check_git_push(branch, web_branch):
     pass
@@ -191,10 +43,10 @@ with open(dev_settings_path) as f:
 gkernelci_try=dev_settings['gkernelci_try']
 
 # download linux-patches repository
-save("git+ssh://git@git.gentoo.org/proj/linux-patches.git", \
+save_repo("git+ssh://git@git.gentoo.org/proj/linux-patches.git", \
      LINUX_PATCHES_REPO_DIR)
 # download genpatches repository
-save("git+ssh://git@git.gentoo.org/proj/linux-patches.git", \
+save_repo("git+ssh://git@git.gentoo.org/proj/linux-patches.git", \
      GENPATCHES_MISC_REPO_DIR, git_branch="genpatches-misc")
 
 # copy git configurations to gentoo repository
