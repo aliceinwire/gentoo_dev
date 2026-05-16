@@ -8,55 +8,17 @@ import re
 import os
 import shutil
 import sys
+from pathlib import Path
 
 CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
-ROOT_DIR=CURRENT_DIR+"/../"+"gentoo_repository/sys-kernel/git-sources/"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
+from gkernel_dev_cli.lib.kernel_org import get_branches, get_links
 print("change dir to git-sources")
+ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "git-sources") + "/"
 os.chdir(ROOT_DIR)
-# clean the html table and get the version number
-def get_version_number(tr_html):
-    # get list of td
-    tr_html = tr_html.findChildren('td')
-    # td 1 contains the kernel number
-    tr_html = tr_html[1]
-    # get the kernel number inside strong tag
-    for node in tr_html.findAll('strong'):
-        tr_html_number = ''.join(node.findAll(text=True))
-    return tr_html_number
-
-
-def find_new_version(version_number, argument_version):
-    version = version_number.split('.', 2)
-    try:
-        version = [version[0],version[1].split('-')[0]]
-    except:
-        pass
-    try:
-        version = version[0] + '.' + version[1]
-        if version == argument_version:
-            return version_number
-        else:
-            pass
-    except:
-        pass
-
-def get_links(branch):
-    revision=0
-    return_version=""
-    versions=[]
-    root_url='https://kernel.org'
-    r = requests.get(root_url)
-    soup = BeautifulSoup(r.content, 'lxml')
-    tables = soup.findChildren('table')
-    my_table = tables[2]
-    tr_table = my_table.findChildren('tr')
-    for i in tr_table:
-        version_number = get_version_number(i)
-        new_version_revision = find_new_version(version_number, branch)
-        if new_version_revision is not None:
-            break
-    return(version_number)
 
 def get_previous_git_version(new_version):
     if "rc" in new_version:
