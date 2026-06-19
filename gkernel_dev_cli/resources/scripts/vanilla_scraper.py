@@ -55,9 +55,9 @@ os.chdir(ROOT_DIR)
 branches=get_branches()
 #branches=['6.17','6.16']
 # Remove EOL branch
-branches.remove('6.19')
+#branches.remove('6.19')
 ## Add branch
-## branches.append('6.19')
+branches.append('7.1')
 # During the merging efforts the two Kconfig options were abandoned in the
 # v5.4.3-rt1 release and since then there is only PREEMPT_RT which enables
 # the full features set (as PREEMPT_RT_FULL did in earlier releases).
@@ -68,5 +68,7 @@ os.system("git pull --rebase=merges origin master -S")
 for branch in branches:
     rename_vanilla_packages(get_links(branch))
     os.system("pkgdev manifest")
+    os.system("ebuild " + new_filename + " clean test install")
+    os.system("ebuild " + new_filename + " clean")
     os.system("pkgdev commit -a")
 os.chdir(CURRENT_DIR)
