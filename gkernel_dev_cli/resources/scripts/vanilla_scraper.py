@@ -57,7 +57,7 @@ branches=get_branches()
 # Remove EOL branch
 #branches.remove('6.19')
 ## Add branch
-branches.append('7.1')
+##branches.append('7.1')
 # During the merging efforts the two Kconfig options were abandoned in the
 # v5.4.3-rt1 release and since then there is only PREEMPT_RT which enables
 # the full features set (as PREEMPT_RT_FULL did in earlier releases).
