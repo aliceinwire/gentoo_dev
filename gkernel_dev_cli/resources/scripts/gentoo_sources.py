@@ -12,7 +12,7 @@ CURRENT_DIR=os.path.dirname(os.path.realpath(__file__))
 REPO_ROOT = Path(__file__).resolve().parents[3]
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
-from gkernel_dev_cli.lib.kernel_org import get_branches
+from gkernel_dev_cli.lib.kernel_org import get_branches, get_links
 LINUX_PATCHES_REPO_DIR=str(REPO_ROOT / "linux-patches") + "/"
 TEMPLATES_DIR=os.path.join(CURRENT_DIR+"/../templates/")
 ROOT_DIR=str(REPO_ROOT / "gentoo_repository" / "sys-kernel" / "gentoo-sources") + "/"
@@ -31,6 +31,36 @@ def _parse_gentoo_sources_filename(branch, filename):
         "version": match.group("patch")
         + (f"-r{match.group('revision')}" if match.group("revision") else ""),
     }
+
+def _get_kernel_org_patch(branch):
+    latest_version = get_links(branch)
+    if latest_version is None:
+        raise ValueError(f"No kernel.org release found for branch {branch}")
+    if latest_version == branch:
+        return 0
+    branch_prefix = f"{branch}."
+    if not latest_version.startswith(branch_prefix):
+        raise ValueError(
+            f"kernel.org release {latest_version} does not match branch {branch}"
+        )
+    patch = latest_version[len(branch_prefix):].split("-", 1)[0]
+    try:
+        return int(patch)
+    except ValueError as exc:
+        raise ValueError(
+            f"Unable to parse patch version from kernel.org release {latest_version}"
+        ) from exc
+
+
+def _is_available_on_kernel_org(branch, patch):
+    kernel_org_patch = _get_kernel_org_patch(branch)
+    if patch <= kernel_org_patch:
+        return True
+    print(
+        f"Skipping gentoo-sources-{branch}.{patch}.ebuild: "
+        f"latest kernel.org release for {branch} is {branch}.{kernel_org_patch}"
+    )
+    return False
 
 def _get_gentoo_sources_versions(branch):
     dir_files = os.listdir(ROOT_DIR)
@@ -131,9 +161,13 @@ def main():
         print("latest tag="+last_tag+" k_genpatches_version="+current_k_genpatches_version)
         if int(last_tag) != int(current_k_genpatches_version):
             print("latest tag="+last_tag+" is different from last k_genpatches_version="+current_k_genpatches_version)
+            new_filename=create_filename(branch)
+            latest_ebuild = get_latest_gentoo_sources_ebuild(branch)
+            new_patch = latest_ebuild["patch"] + 1
+            if not _is_available_on_kernel_org(branch, new_patch):
+                continue
             new_gentoo_sources=create_new_gentoo_sources(last_tag,branch)
             #print(new_gentoo_sources)
-            new_filename=create_filename(branch)
             print(new_filename)
             with open(new_filename, "w") as gs:
                 gs.write(new_gentoo_sources)
